@@ -3,6 +3,7 @@ name: Build EXE
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,16 +15,20 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: npm install
 
       - name: Build EXE
-        run: npx electron-builder --win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+        run: npx electron-builder --win portable --x64
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: app
-          path: dist/**
+          name: Mizan-POS
+          path: dist/Mizan-POS-Setup.exe
